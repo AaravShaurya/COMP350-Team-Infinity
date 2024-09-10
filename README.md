@@ -5,7 +5,7 @@ Introduction: The annual student government elections at our university have tra
 
 Related Work: Existing election systems like Election Buddy offer similar functionalities but are not suitable for our university’s budget, Google Forms is another commonly used tool.
 
-Problem Statement: The use of Google Forms for student elections resulted in vulnerabilities such as potential breaches of voter anonymity, difficulty in preventing multiple submissions, and challenges in efficiently managing and verify++ing results.
+Problem Statement: The use of Google Forms for student elections resulted in vulnerabilities such as potential breaches of voter anonymity, difficulty in preventing multiple submissions, and challenges in efficiently managing and verifying results.
 
 Solution Proposal: We propose developing a dedicated election software system that integrates with the university’s ID system, ensuring secure, anonymous voting, preventing double voting, and providing real-time, transparent results.
 
