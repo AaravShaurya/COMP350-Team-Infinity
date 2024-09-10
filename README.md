@@ -1,5 +1,5 @@
 # COMP350-Team-Infinity
-5 Sentence Summary
+## 5 Sentence Summary
 
 Introduction: The annual student government elections at our university have traditionally been conducted using Google Forms.
 
@@ -11,7 +11,8 @@ Solution Proposal: We propose developing a dedicated election software system th
 
 Validation: The success of this system will be measured by its ability to eliminate the issues previously encountered with Google Forms, particularly in terms of security, anonymity, and result management, leading to its adoption for future elections at the university.
 
-Sequence Diagram (Image in docs folder labelled (Sequencediagram.jpeg))
+## Sequence Diagram 
+(Image in docs folder labelled (Sequencediagram.jpeg))
 
 Actors: User (Voter), Admin, System.
 
