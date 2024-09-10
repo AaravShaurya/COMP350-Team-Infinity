@@ -14,9 +14,9 @@ Validation: The success of this system will be measured by its ability to elimin
 ## Sequence Diagram 
 (Image in docs folder labelled (Sequencediagram.jpeg))
 
-Actors: User (Voter), Admin, System.
+### Actors: User (Voter), Admin, System.
 
-Processes:
+### Processes:
 
 User Login: The user accesses the login page and inputs their credentials (limited to specific IDs).
 
