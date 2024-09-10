@@ -16,14 +16,25 @@ Sequence Diagram (Image in docs folder labelled (Sequencediagram.jpeg))
 Actors: User (Voter), Admin, System.
 
 Processes:
+
 User Login: The user accesses the login page and inputs their credentials (limited to specific IDs).
+
 System Authentication: The system verifies user credentials.
+
 Vote Casting: User selects their voting preferences.
+
 Anonymity and Encryption: The system encrypts the vote to ensure anonymity.
+
 Vote Submission: The user submits their vote.
+
 Vote Storage: The system securely stores the encrypted vote.
+
 Admin Access: Admin logs in to manage the election process, such as populating candidates.
+
 Results Compilation: After voting ends, the system compiles the results.
+
 Transparency Check: The system displays results publicly (without compromising individual votes). 
+
 Double Voting Safeguard: System checks for and prevents any double-voting attempts. 
+
 Confirmation: System sends an optional confirmation of the vote being successfully cast to the user.
