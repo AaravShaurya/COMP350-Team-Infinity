@@ -12,7 +12,7 @@ Solution Proposal: We propose developing a dedicated election software system th
 Validation: The success of this system will be measured by its ability to eliminate the issues previously encountered with Google Forms, particularly in terms of security, anonymity, and result management, leading to its adoption for future elections at the university.
 
 ## Sequence Diagram 
-(Image in docs folder labelled (Sequencediagram.jpeg))
+(Image in docs folder labelled (Sequence Diagram.jpg))
 
 ### Actors: User (Voter), Admin, System.
 
