@@ -39,3 +39,21 @@ Transparency Check: The system displays results publicly (without compromising i
 Double Voting Safeguard: System checks for and prevents any double-voting attempts. 
 
 Confirmation: System sends an optional confirmation of the vote being successfully cast to the user.
+
+## Getting Started
+
+This section will guide you through setting up and running the election system locally.
+
+First, clone the repository to your local machine:
+
+```
+git clone https://github.com/your-username/ease-my-vote.git
+```
+
+Secondly, Prepare Static HTML/CSS/JS Files
+
+The HTML, CSS, and JavaScript files are located in the static directory.
+
+Open the folder on VSCode, then open login.html. Right-click on the HTML file and choose 'Show Preview'. The address to access the website will be on the address bar. Copy the link and paste it into your browser. Otherwise, double-click on login.html in the directory.
+
+
