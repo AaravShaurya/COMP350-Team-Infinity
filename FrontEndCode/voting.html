@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voting - EaseMyVote</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Hero Section -->
+    <div class="hero">
+        <h1>Choose Your Candidates</h1>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">EaseMyVote</a>
+        </div>
+    </nav>
+
+
+    <!-- Stepper -->
+    <div class="container">
+        <div class="stepper">
+            <div class="step active">
+                <div>1</div>
+                <div class="step-title">Login</div>
+            </div>
+            <div class="step active">
+                <div>2</div>
+                <div class="step-title">Rules</div>
+            </div>
+            <div class="step active">
+                <div>3</div>
+                <div class="step-title">Voting</div>
+            </div>
+            <div class="step">
+                <div>4</div>
+                <div class="step-title">Summary</div>
+            </div>
+            <div class="step">
+                <div>5</div>
+                <div class="step-title">Complete</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container container-form">
+        <div class="card p-4">
+            <h3 class="mb-3">Position 1</h3>
+            <p class="text-muted">Choose your preferences for Position 1</p>
+            <form>
+                <div class="mb-3">
+                    <label for="firstPref" class="form-label">First Preference</label>
+                    <select id="firstPref" class="form-select">
+                        <option value="candidate1">Candidate 1</option>
+                        <option value="candidate2">Candidate 2</option>
+                        <option value="candidate3">Candidate 3</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="secondPref" class="form-label">Second Preference</label>
+                    <select id="secondPref" class="form-select">
+                        <option value="candidate1">Candidate 1</option>
+                        <option value="candidate2">Candidate 2</option>
+                        <option value="candidate3">Candidate 3</option>
+                    </select>
+                </div>
+                <button type="button" class="btn btn-primary" onclick="navigateTo('summary.html')">Continue</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>© 2024 EaseMyVote. All Rights Reserved.</p>
+    </div>
+
+    <script src="scripts.js"></script>
+</body>
+</html>
