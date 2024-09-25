@@ -50,10 +50,8 @@ First, clone the repository to your local machine:
 git clone https://github.com/your-username/ease-my-vote.git
 ```
 
-Secondly, Prepare Static HTML/CSS/JS Files
+Secondly, ensure that you have the following dependencies installed, if not please install them - pip install fastapi uvicorn sqlalchemy aiosmtplib cryptography itsdangerous jinja2
 
-The HTML, CSS, and JavaScript files are located in the static directory.
+Now, download all the files from the demo folder following the exact same file structure as we followed when making that folder. Once that's done go to the import_voters.py file and change there is a line of code that has a file path given there, you need to be change this file path to point to the directory where you have stored the SIAS22-25.xlsx database so that it can read that data properly.
 
-Open the folder on VSCode, then open login.html. Right-click on the HTML file and choose 'Show Preview'. The address to access the website will be on the address bar. Copy the link and paste it into your browser. Otherwise, double-click on login.html in the directory.
-
-
+Finally, run this command to test the whole application - uvicorn main:app --reload
