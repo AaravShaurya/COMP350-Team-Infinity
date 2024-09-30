@@ -2,16 +2,14 @@
 #uvicorn main:app --reload
 #http://127.0.0.1:8000
 
-# main.py
-
-# main.py
 
 from fastapi import FastAPI, Depends, HTTPException, Request, Form
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
-from database import SessionLocal, engine
+from sqlalchemy import func
+from database import Base, SessionLocal, engine
 from models import Voter, Vote, Candidate
 from pydantic import EmailStr
 from cryptography.fernet import Fernet
@@ -24,6 +22,7 @@ from jinja2 import Template
 import datetime
 from starlette.middleware.sessions import SessionMiddleware
 import json
+import asyncio
 
 # Initialize app and templates
 app = FastAPI()
@@ -33,8 +32,6 @@ templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Create database tables
-from models import Voter, Vote  # Ensure models are imported before creating tables
-from database import Base  # Import Base after models
 Base.metadata.create_all(bind=engine)
 
 # Dependency to get DB session
@@ -46,13 +43,13 @@ def get_db():
         db.close()
 
 # Encryption key for voter anonymity
-FERNET_KEY = os.getenv("FERNET_KEY")  # Set this environment variable
+FERNET_KEY = os.getenv("FERNET_KEY")  # Ensure this environment variable is set
 if not FERNET_KEY:
     raise ValueError("FERNET_KEY environment variable is not set.")
 fernet = Fernet(FERNET_KEY)
 
-# Use a consistent secret key that doesn't regenerate with each restart
-SECRET_KEY = os.getenv("SECRET_KEY")  # Set this environment variable
+# Consistent secret key for session management and token serialization
+SECRET_KEY = os.getenv("SECRET_KEY")  # Ensure this environment variable is set
 if not SECRET_KEY:
     raise ValueError("SECRET_KEY environment variable is not set.")
 serializer = URLSafeTimedSerializer(SECRET_KEY)
@@ -60,14 +57,14 @@ serializer = URLSafeTimedSerializer(SECRET_KEY)
 # Add SessionMiddleware
 app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
 
-# Required email components
+# Required email components for validation
 REQUIRED_EMAIL_COMPONENTS = ["sias", "krea.ac.in"]
 
-# Email configuration (store sensitive info securely)
+# Email configuration (ensure sensitive info is stored securely)
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USERNAME = "easemyvote@gmail.com"
-EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")  # Get password from environment variable
+EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")  # Ensure this environment variable is set
 if not EMAIL_PASSWORD:
     raise ValueError("EMAIL_PASSWORD environment variable is not set.")
 
@@ -75,7 +72,7 @@ if not EMAIL_PASSWORD:
 
 @app.get("/", response_class=HTMLResponse)
 def read_login(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request, "error": None})
+    return templates.TemplateResponse("Login_easemyvote.html", {"request": request, "error": None})
 
 @app.post("/login")
 async def login(
@@ -83,15 +80,15 @@ async def login(
     email: EmailStr = Form(...),
     db: Session = Depends(get_db)
 ):
-    email = email.lower().strip()  # Ensure email is in lowercase and stripped of whitespace
-
-    # Log the email for debugging
+    email = email.lower().strip()  # Normalize email
+    
+    # Debug: Log the entered email
     print(f"Email entered: {email}")
 
-    # Check if both "sias" and "krea.ac.in" are present in the email
+    # Validate email components
     if not all(component in email for component in REQUIRED_EMAIL_COMPONENTS):
         print(f"Email validation failed for: {email}")
-        return templates.TemplateResponse("login.html", {"request": request, "error": "Unable to verify email."})
+        return templates.TemplateResponse("Login_easemyvote.html", {"request": request, "error": "Unable to verify email."})
 
     # Check if voter exists
     voter = db.query(Voter).filter(Voter.email == email).first()
@@ -102,22 +99,32 @@ async def login(
                 six_months_ago = datetime.datetime.utcnow() - datetime.timedelta(days=180)
                 if voter.voted_at >= six_months_ago:
                     print(f"Voter {email} has already voted in the last 6 months.")
-                    return templates.TemplateResponse("login.html", {"request": request, "error": "You have already voted in the last 6 months."})
+                    return templates.TemplateResponse("Login_easemyvote.html", {"request": request, "error": "You have already voted in the last 6 months."})
                 else:
                     # Reset voter status
                     voter.has_voted = False
                     voter.is_verified = False
-                    db.commit()
+                    try:
+                        db.commit()
+                    except Exception as e:
+                        db.rollback()
+                        print(f"Database commit failed: {e}")
+                        return templates.TemplateResponse("Login_easemyvote.html", {"request": request, "error": "Database error."})
             else:
                 # If voted_at is None, reset voting status
                 voter.has_voted = False
                 voter.is_verified = False
-                db.commit()
+                try:
+                    db.commit()
+                except Exception as e:
+                    db.rollback()
+                    print(f"Database commit failed: {e}")
+                    return templates.TemplateResponse("Login_easemyvote.html", {"request": request, "error": "Database error."})
     else:
         print(f"Voter with email {email} does not exist in the database.")
-        return templates.TemplateResponse("login.html", {"request": request, "error": "Unable to verify email."})
+        return templates.TemplateResponse("Login_easemyvote.html", {"request": request, "error": "Unable to verify email."})
 
-    # Generate a token
+    # Generate a token for email verification
     token = serializer.dumps(email, salt="email-confirm")
 
     # Create a verification link
@@ -125,18 +132,23 @@ async def login(
 
     # Render the email template
     template_path = "verification_email.html"
-    with open(os.path.join("templates", template_path)) as f:
-        template = Template(f.read())
+    try:
+        with open(os.path.join("templates", template_path)) as f:
+            template = Template(f.read())
+    except FileNotFoundError:
+        print(f"Email template '{template_path}' not found.")
+        return templates.TemplateResponse("Login_easemyvote.html", {"request": request, "error": "Email template missing."})
 
     email_body = template.render(email=email, verification_link=verification_link)
 
-    # Send the verification email using aiosmtplib
+    # Prepare the email message
     message = EmailMessage()
     message["From"] = EMAIL_USERNAME
     message["To"] = email
     message["Subject"] = "EaseMyVote Email Verification"
     message.set_content(email_body, subtype="html")
 
+    # Send the verification email asynchronously
     try:
         await aiosmtplib.send(
             message,
@@ -149,23 +161,25 @@ async def login(
         print(f"Verification email sent to {email}.")
     except Exception as e:
         print(f"Email sending failed: {e}")
-        return templates.TemplateResponse("login.html", {"request": request, "error": "Unable to verify email."})
+        return templates.TemplateResponse("Login_easemyvote.html", {"request": request, "error": "Unable to send verification email."})
 
     return templates.TemplateResponse("email_sent.html", {"request": request})
 
 @app.get("/verify-email", response_class=HTMLResponse)
 def verify_email(request: Request, token: str, db: Session = Depends(get_db)):
     try:
+        # Decode the token to get the email
         email = serializer.loads(token, salt="email-confirm", max_age=3600)
         print(f"Email verified: {email}")
     except (SignatureExpired, BadSignature, BadTimeSignature) as e:
         print(f"Email verification failed: {e}")
-        return templates.TemplateResponse("login.html", {"request": request, "error": "The verification link is invalid or has expired."})
+        return templates.TemplateResponse("Login_easemyvote.html", {"request": request, "error": "The verification link is invalid or has expired."})
 
+    # Fetch the voter from the database
     voter = db.query(Voter).filter(Voter.email == email).first()
     if not voter:
         print(f"Voter with email {email} not found during verification.")
-        return templates.TemplateResponse("login.html", {"request": request, "error": "Unable to verify email."})
+        return templates.TemplateResponse("Login_easemyvote.html", {"request": request, "error": "Unable to verify email."})
 
     voter.is_verified = True
 
@@ -174,14 +188,19 @@ def verify_email(request: Request, token: str, db: Session = Depends(get_db)):
         encrypted_voter_id = fernet.encrypt(str(voter.id).encode()).decode()
         voter.encrypted_id = encrypted_voter_id
 
-    db.commit()
+    try:
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        print(f"Database commit failed: {e}")
+        return templates.TemplateResponse("Login_easemyvote.html", {"request": request, "error": "Database error during verification."})
 
     # Store data in session
     request.session['user_email'] = email
     request.session['rules_read'] = False
 
-    # Render the rules page directly
-    return templates.TemplateResponse("rules.html", {"request": request})
+    # Redirect to the rules page
+    return RedirectResponse(url="/rules", status_code=303)
 
 @app.get("/rules", response_class=HTMLResponse)
 def show_rules(request: Request):
@@ -203,7 +222,7 @@ def accept_rules(request: Request):
     return RedirectResponse(url="/voting", status_code=303)
 
 @app.get("/voting", response_class=HTMLResponse)
-def show_voting_page(request: Request):
+def show_voting_page(request: Request, db: Session = Depends(get_db)):
     email = request.session.get('user_email')
     rules_read = request.session.get('rules_read')
 
@@ -213,13 +232,27 @@ def show_voting_page(request: Request):
     if not rules_read:
         print("Rules not accepted yet. Redirecting to rules page.")
         return RedirectResponse(url="/rules")
-    return templates.TemplateResponse("voting.html", {"request": request})
+
+    # Define the position to display
+    position = "MOCC"  # Ensure this matches the position you want to display
+
+    # Fetch candidates with case-insensitive position matching
+    try:
+        candidates = db.query(Candidate).filter(func.lower(Candidate.position) == position.lower()).all()
+    except Exception as e:
+        print(f"Error fetching candidates: {e}")
+        raise HTTPException(status_code=500, detail="Error fetching candidates.")
+
+    # Debugging: Print the list of candidates for the position
+    print(f"Candidates for position '{position}': {[candidate.name for candidate in candidates]}")
+
+    return templates.TemplateResponse("voting.html", {"request": request, "candidates": candidates, "position": position})
 
 @app.post("/vote")
 def submit_vote(
     request: Request,
-    first_pref: str = Form(...),
-    second_pref: str = Form(...),
+    first_pref: int = Form(...),
+    second_pref: int = Form(...),
     db: Session = Depends(get_db)
 ):
     email = request.session.get('user_email')
@@ -231,12 +264,7 @@ def submit_vote(
     if not voter:
         print(f"Voter with email {email} not found during vote submission.")
         return templates.TemplateResponse(
-            "login.html", {"request": request, "error": "Unable to verify email."}
-        )
-    if voter.has_voted:
-        print(f"Voter with email {email} has already voted.")
-        return templates.TemplateResponse(
-            "login.html", {"request": request, "error": "You have already voted."}
+            "Login_easemyvote.html", {"request": request, "error": "Unable to verify email."}
         )
 
     encrypted_voter_id = voter.encrypted_id
@@ -249,34 +277,38 @@ def submit_vote(
         "second_pref": second_pref
     }
 
-    if existing_vote:
-        # Update the existing vote
-        existing_vote.preferences = json.dumps(preferences)
-    else:
-        # Create a new vote
-        vote = Vote(
-            encrypted_voter_id=encrypted_voter_id,
-            preferences=json.dumps(preferences)
-        )
-        db.add(vote)
+    try:
+        if existing_vote:
+            # Update the existing vote
+            existing_vote.preferences = json.dumps(preferences)
+        else:
+            # Create a new vote
+            vote = Vote(
+                encrypted_voter_id=encrypted_voter_id,
+                preferences=json.dumps(preferences)
+            )
+            db.add(vote)
 
-    voter.has_voted = True
-    voter.voted_at = datetime.datetime.utcnow()
-    db.commit()
+        voter.has_voted = True
+        voter.voted_at = datetime.datetime.utcnow()
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        print(f"Database commit failed during vote submission: {e}")
+        raise HTTPException(status_code=500, detail="Database error during vote submission.")
 
     print(f"Vote submitted by {email}.")
 
     return RedirectResponse(url="/summary", status_code=303)
 
 @app.get("/summary", response_class=HTMLResponse)
-def show_summary(request: Request):
+def show_summary(request: Request, db: Session = Depends(get_db)):
     email = request.session.get('user_email')
     if not email:
         print("No user_email in session when accessing summary page. Redirecting to login.")
         return RedirectResponse(url="/")
 
     # Retrieve preferences from the database
-    db = next(get_db())
     voter = db.query(Voter).filter(Voter.email == email).first()
     if not voter:
         print(f"Voter with email {email} not found when fetching summary.")
@@ -287,7 +319,16 @@ def show_summary(request: Request):
         return RedirectResponse(url="/")
     preferences = json.loads(vote.preferences)
 
-    return templates.TemplateResponse("summary.html", {"request": request, "preferences": preferences})
+    # Retrieve candidate names
+    first_pref_candidate = db.query(Candidate).filter(Candidate.id == preferences['first_pref']).first()
+    second_pref_candidate = db.query(Candidate).filter(Candidate.id == preferences['second_pref']).first()
+
+    preferences_display = {
+        "first_pref": first_pref_candidate.name if first_pref_candidate else "N/A",
+        "second_pref": second_pref_candidate.name if second_pref_candidate else "N/A"
+    }
+
+    return templates.TemplateResponse("summary.html", {"request": request, "preferences": preferences_display})
 
 @app.get("/thankyou", response_class=HTMLResponse)
 def thank_you(request: Request):
@@ -298,46 +339,68 @@ def get_results(request: Request, db: Session = Depends(get_db)):
     votes = db.query(Vote).all()
     all_preferences = [json.loads(vote.preferences) for vote in votes]
 
-    # Candidates list (Should be dynamic or from DB)
-    candidates = ["Candidate 1", "Candidate 2", "Candidate 3"]
-    winner = instant_runoff_voting(all_preferences, candidates)
-    return templates.TemplateResponse("results.html", {"request": request, "winner": winner})
+    # Candidates list from the database
+    candidate_objs = db.query(Candidate).all()
+    candidates = {str(candidate.id): candidate.name for candidate in candidate_objs}
+    winner_id = instant_runoff_voting(all_preferences, list(candidates.keys()))
+    winner_name = candidates.get(str(winner_id), "No winner")
 
-def instant_runoff_voting(votes, candidates):
+    return templates.TemplateResponse("results.html", {"request": request, "winner": winner_name})
+
+def instant_runoff_voting(votes, candidate_ids):
     while True:
         counts = defaultdict(int)
         for vote in votes:
             if vote and 'first_pref' in vote and vote['first_pref']:
-                counts[vote['first_pref']] += 1
+                counts[str(vote['first_pref'])] += 1
 
         total_votes = sum(counts.values())
-        for candidate, count in counts.items():
+        for candidate_id, count in counts.items():
             if count > total_votes / 2:
-                return candidate
+                return candidate_id
+
+        if not counts:
+            return None  # No candidates left
 
         # Eliminate candidate with fewest votes
         least_votes_candidate = min(counts, key=counts.get)
-        candidates.remove(least_votes_candidate)
+        if least_votes_candidate not in candidate_ids:
+            return None
+        candidate_ids.remove(least_votes_candidate)
 
         # Remove eliminated candidate from votes
         for vote in votes:
-            if 'first_pref' in vote and vote['first_pref'] == least_votes_candidate:
+            if 'first_pref' in vote and str(vote['first_pref']) == least_votes_candidate:
                 # Promote second preference to first
                 vote['first_pref'] = vote.get('second_pref', None)
                 vote['second_pref'] = None
 
-        if len(candidates) == 1:
-            return candidates[0]
-        
+        if len(candidate_ids) == 1:
+            return candidate_ids[0]
+
 @app.get("/votes/{position}")
-def get_votes(position: str):
-    db: Session = SessionLocal()
-    votes = db.query(Candidate.name, Vote.vote_count).join(Vote).filter(Candidate.position == position).all()
-    db.close()
-    
-    # Format the data into a dict format suitable for frontend consumption
+def get_votes(position: str, db: Session = Depends(get_db)):
+    # Fetch candidates and votes for the given position with case-insensitive matching
+    try:
+        candidates = db.query(Candidate).filter(func.lower(Candidate.position) == position.lower()).all()
+    except Exception as e:
+        print(f"Error fetching candidates for position '{position}': {e}")
+        raise HTTPException(status_code=500, detail="Error fetching candidates.")
+
+    candidate_ids = [str(candidate.id) for candidate in candidates]
+    candidate_names = {str(candidate.id): candidate.name for candidate in candidates}
+
+    votes = db.query(Vote).all()
+    vote_counts = defaultdict(int)
+
+    for vote in votes:
+        preferences = json.loads(vote.preferences)
+        first_pref = str(preferences.get('first_pref'))
+        if first_pref in candidate_ids:
+            vote_counts[first_pref] += 1
+
     response_data = {
-        "labels": [candidate_name for candidate_name, _ in votes],
-        "votes": [vote_count for _, vote_count in votes]
+        "labels": [candidate_names[candidate_id] for candidate_id in vote_counts.keys()],
+        "votes": [count for count in vote_counts.values()]
     }
     return response_data
