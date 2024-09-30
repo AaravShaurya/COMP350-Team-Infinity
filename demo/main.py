@@ -49,7 +49,7 @@ if not FERNET_KEY:
 fernet = Fernet(FERNET_KEY)
 
 # Consistent secret key for session management and token serialization
-SECRET_KEY = os.getenv("SECRET_KEY")  # Ensure this environment variable is set
+SECRET_KEY = os.getenv("SECRET_KEY")
 if not SECRET_KEY:
     raise ValueError("SECRET_KEY environment variable is not set.")
 serializer = URLSafeTimedSerializer(SECRET_KEY)
@@ -64,7 +64,7 @@ REQUIRED_EMAIL_COMPONENTS = ["sias", "krea.ac.in"]
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USERNAME = "easemyvote@gmail.com"
-EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")  # Ensure this environment variable is set
+EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
 if not EMAIL_PASSWORD:
     raise ValueError("EMAIL_PASSWORD environment variable is not set.")
 
