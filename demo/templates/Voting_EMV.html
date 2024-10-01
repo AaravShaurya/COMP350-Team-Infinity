@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voting - EaseMyVote</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', path='styles.css') }}" rel="stylesheet">
+    <style>
+        /* Global Styling */
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-image: url('https://i.postimg.cc/Bb8rR4nW/Krea-University.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            backdrop-filter: brightness(0.8); /* Reduce transparency of the background image */
+        }
+
+        /* Color Scheme */
+        :root {
+            --primary-color: #2252a1;
+            --secondary-color: #2856a4;
+            --text-color: #fff;
+        }
+
+        /* Navbar Styling */
+        .navbar-custom {
+            background-color: white;
+            padding: 10px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-brand img {
+            width: 150px; /* Logo size */
+        }
+
+        /* Progress Bar Styling (Stepper) */
+        .stepper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            margin: 40px 0;
+            padding: 0 50px;
+        }
+
+        .step {
+            text-align: center;
+            flex: 1;
+            position: relative;
+        }
+
+        .step .step-title {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .stepper::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50px;
+            right: 50px;
+            height: 2px;
+            background-color: var(--primary-color);
+            z-index: 0;
+        }
+
+        .step.active .step-title {
+            background-color: var(--secondary-color);
+        }
+
+        .step.inactive .step-title {
+            background-color: #ccc; /* Greyed out for future steps */
+        }
+
+        /* Card Styling */
+        .container-form {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 600px;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            border-radius: 12px;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+        }
+
+        .card h3 {
+            font-size: 1.8rem;
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-label, .form-select {
+            font-size: 1rem;
+        }
+
+        .mb-3 {
+            margin-bottom: 20px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 5px;
+            width: 100%;
+            margin-top: 30px; /* Increase margin to add space */
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+
+        /* Footer */
+        .footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            margin-top: auto;
+            border-top: 3px solid var(--secondary-color);
+        }
+
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .logo-container img {
+            height: 40px;
+            margin: 0 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+        
+        <a class="navbar-brand" href="#">
+            <img src="https://i.postimg.cc/0QJ9Jx6w/Screenshot-2024-09-29-at-8-13-09-PM.png" alt="KREA University Logo">
+        </a>
+        
+        <a class="navbar-brand" href="#">
+            <img src="https://i.postimg.cc/637pLnPT/Screenshot-2024-09-29-at-8-11-24-PM.png" alt="EaseMyVote Logo">
+        </a>
+    </nav>
+
+    <!-- Stepper  -->
+    <div class="container">
+        <div class="stepper">
+            <div class="step active">
+                <div class="step-title">Login</div>
+            </div>
+            <div class="step active">
+                <div class="step-title">Rules</div>
+            </div>
+            <div class="step active">
+                <div class="step-title">Voting</div>
+            </div>
+            <div class="step inactive">
+                <div class="step-title">Summary</div>
+            </div>
+            <div class="step inactive">
+                <div class="step-title">Complete</div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container container-form">
+        <div class="card p-4">
+            <h3 class="mb-3">{{ position }}</h3>
+            <p class="text-muted">Choose your preferences for {{ position }}</p>
+            <form action="/vote" method="post">
+                <div class="mb-3">
+                    <label for="firstPref" class="form-label">First Preference</label>
+                    <select id="firstPref" name="first_pref" class="form-select" onchange="updateSecondPrefOptions()" required>
+                        <option value="">Select First Preference</option>
+                        {% for candidate in candidates %}
+                            {% if candidate.position == position %}
+                                <option value="{{ candidate.id }}">{{ candidate.name }} - {{ candidate.position }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="secondPref" class="form-label">Second Preference</label>
+                    <select id="secondPref" name="second_pref" class="form-select" required>
+                        <option value="">Select Second Preference</option>
+                        {% for candidate in candidates %}
+                            {% if candidate.position == position %}
+                                <option value="{{ candidate.id }}">{{ candidate.name }} - {{ candidate.position }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Continue</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <div class="logo-container">
+            <img src="https://i.postimg.cc/0QJ9Jx6w/Screenshot-2024-09-29-at-8-13-09-PM.png" alt="KREA University Logo">
+            <img src="https://i.postimg.cc/637pLnPT/Screenshot-2024-09-29-at-8-11-24-PM.png" alt="EaseMyVote Logo">
+        </div>
+        <p>© 2024 EaseMyVote. All Rights Reserved.</p>
+    </div>
+
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        function updateSecondPrefOptions() {
+            const firstPrefValue = document.getElementById('firstPref').value;
+            const secondPrefSelect = document.getElementById('secondPref');
+
+            
+            const options = secondPrefSelect.querySelectorAll('option');
+
+            
+            options.forEach(option => {
+                if (option.value === firstPrefValue) {
+                    option.disabled = true;
+                    option.style.display = 'none';  
+                } else {
+                    option.disabled = false;
+                    option.style.display = 'block';  
+                }
+            });
+
+            
+            if (secondPrefSelect.value === firstPrefValue) {
+                secondPrefSelect.value = "";
+            }
+        }
+    </script>
+</body>
+</html>
