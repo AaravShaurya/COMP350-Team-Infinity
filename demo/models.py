@@ -1,5 +1,4 @@
 # models.py
-# models.py
 
 from sqlalchemy import Column, Integer, String, Boolean, DateTime
 from database import Base  # Import Base from database.py
@@ -18,6 +17,7 @@ class Candidate(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
     position = Column(String, nullable=False)
+    vote_tally = Column(Integer, default=0)  # New column added
 
 class Vote(Base):
     __tablename__ = 'votes'
