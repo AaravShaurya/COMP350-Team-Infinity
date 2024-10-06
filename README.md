@@ -40,21 +40,91 @@ Double Voting Safeguard: System checks for and prevents any double-voting attemp
 
 Confirmation: System sends an optional confirmation of the vote being successfully cast to the user.
 
-## Getting Started
+## EaseMyVote Setup Guide
 
-This section will guide you through setting up and running the election system locally.
+This guide will help you set up the EaseMyVote project on your local machine.
 
-First, clone the repository to your local machine:
+### Prerequisites
+
+Ensure you have the following installed:
+
+- Python 3.x
+- Virtual Environment (`venv`)
+
+### Steps to Set Up
+
+#### 1. Create and Activate Virtual Environment
+
+Clone the repository:
+``` git clone https://github.com/your-username/ease-my-vote.git ```
+
+Then open the 'final' repository and do the following:
+
+First, create and activate a virtual environment:
+
+```bash
+python -m venv venv
+source venv/bin/activate  # For Linux/Mac
+# .\venv\Scripts\activate  # For Windows
+```
+
+#### 2. Install Dependencies
+Once the virtual environment is activated, install the required packages:
 
 ```
-git clone https://github.com/your-username/ease-my-vote.git
+pip install -r requirements-main.txt
 ```
 
-Secondly, ensure that you have the following dependencies installed, if not please install them - 
-pip install aiosmtplib cryptography fastapi itsdangerous jinja2 pandas pytest python-dotenv pydantic sqlalchemy starlette uvicorn httpx jinja2
+#### 3. Run Database and Import Scripts
+Next, initialize the database and import the voters and candidates:
 
-These should get downloaded
+```
+# Run the database setup
+python database.py
 
-Now, download all the files from the demo folder following the exact same file structure as we followed when making that folder. Once that's done go to the import_voters.py file and change there is a line of code that has a file path given there, you need to be change this file path to point to the directory where you have stored the SIAS22-25.xlsx database so that it can read that data properly.
+# Run the models script
+python models.py
 
-Finally, run this command to test the whole application - uvicorn main:app --reload
+# Import voters from an Excel or CSV file
+python import_voters.py
+
+# Add candidates to the database
+python add_candidates.py
+```
+
+#### 4. Set Environment Variables
+You will need to set several environment variables for encryption keys and email handling.
+
+1. Generate the FERNET_KEY using the provided script:
+```
+python generate_fernet_key.py
+```
+
+2. Set the following environment variables:
+```
+export FERNET_KEY=<generated_fernet_key>
+export SECRET_KEY=<your_secret_key>
+export EMAIL_PASSWORD=<your_email_password>
+```
+#### 5. Run the Application
+To run the main application, use the following commands:
+```
+# For the main application
+uvicorn main:app --reload
+
+# For the admin panel
+python main_admin.py
+```
+This will start the app in development mode, with automatic reloading enabled.
+
+### Notes
+1) Excel Import Issues: If the Excel import doesn’t work, reinstall the necessary dependencies from the documentation. Delete any .shl and .val files that may have been created.
+2) Gmail Credentials: Contact the project admin team for updated Gmail credentials if necessary.
+3) Domain Adjustments: Ensure the email domain is set correctly (e.g., krea.edu.in instead of krea-ac.in if needed).
+
+### Troubleshooting
+1) If you encounter issues with email sending, check the environment variables for accuracy.
+2) Ensure you have internet connectivity if your project makes API calls or external requests.
+3) Check the project logs for detailed error messages, and consult the documentation for further guidance.
+
+
