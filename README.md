@@ -60,7 +60,7 @@ Clone the repository:
 
 Then open the 'final' repository and do the following:
 
-First, create and activate a virtual environment:
+First, create and activate a virtual environment within your directory using the terminal:
 
 ```bash
 python -m venv venv
@@ -69,14 +69,14 @@ source venv/bin/activate  # For Linux/Mac
 ```
 
 #### 2. Install Dependencies
-Once the virtual environment is activated, install the required packages:
+Once the virtual environment is activated, install the required packages within your directory using the terminal:
 
 ```
 pip install -r requirements-main.txt
 ```
 
 #### 3. Run Database and Import Scripts
-Next, initialize the database and import the voters and candidates:
+Next, initialize the database and import the voters and candidates within your directory using the terminal:
 
 ```
 # Run the database setup
@@ -95,19 +95,19 @@ python add_candidates.py
 #### 4. Set Environment Variables
 You will need to set several environment variables for encryption keys and email handling.
 
-1. Generate the FERNET_KEY using the provided script:
+1. Generate the FERNET_KEY using the provided script within your directory using the terminal:
 ```
 python generate_fernet_key.py
 ```
 
-2. Set the following environment variables:
+2. Set the following environment variables within your directory using the terminal:
 ```
 export FERNET_KEY=<generated_fernet_key>
 export SECRET_KEY=<your_secret_key>
 export EMAIL_PASSWORD=<your_email_password>
 ```
 #### 5. Run the Application
-To run the main application, use the following commands:
+To run the main application, use the following commands within your directory using the terminal:
 ```
 # For the main application
 uvicorn main:app --reload
