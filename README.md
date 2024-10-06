@@ -58,7 +58,7 @@ Ensure you have the following installed:
 Clone the repository:
 ``` git clone https://github.com/your-username/ease-my-vote.git ```
 
-Then open the 'final' repository and do the following:
+Then enter the 'final' folder and do the following. All actions will be performed within the 'final' folder:
 
 First, create and activate a virtual environment within your directory using the terminal:
 
@@ -72,7 +72,7 @@ source venv/bin/activate  # For Linux/Mac
 Once the virtual environment is activated, install the required packages within your directory using the terminal:
 
 ```
-pip install -r requirements-main.txt
+pip install -r requirements_main.txt
 ```
 
 #### 3. Run Database and Import Scripts
@@ -99,6 +99,7 @@ You will need to set several environment variables for encryption keys and email
 ```
 python generate_fernet_key.py
 ```
+The first line is the FERNET_KEY and the second line is the SECRET_KEY.
 
 2. Set the following environment variables within your directory using the terminal:
 ```
@@ -106,6 +107,10 @@ export FERNET_KEY=<generated_fernet_key>
 export SECRET_KEY=<your_secret_key>
 export EMAIL_PASSWORD=<your_email_password>
 ```
+The current EMAIL_PASSWORD is kabusrsmelkilkmq.
+
+Note that you can store your fernet and secret keys in fernetkey.txt for your future access.
+
 #### 5. Run the Application
 To run the main application, use the following commands within your directory using the terminal:
 ```
@@ -119,8 +124,8 @@ This will start the app in development mode, with automatic reloading enabled.
 
 ### Notes
 1) Excel Import Issues: If the Excel import doesn’t work, reinstall the necessary dependencies from the documentation. Delete any .shl and .val files that may have been created.
-2) Gmail Credentials: Contact the project admin team for updated Gmail credentials if necessary.
-3) Domain Adjustments: Ensure the email domain is set correctly (e.g., krea.edu.in instead of krea-ac.in if needed).
+2) Gmail Credentials: Contact the project admin team for updated Gmail credentials of easemyvote@gmail.com if necessary.
+3) Domain Adjustments: We have updated the email validation logic to include the professor's email domain. Hence instead of filtering out 'krea.ac.in', we are only filtering out emails with just 'krea'. This change ensures that both students and the professor can access the website. 
 
 ### Troubleshooting
 1) If you encounter issues with email sending, check the environment variables for accuracy.
