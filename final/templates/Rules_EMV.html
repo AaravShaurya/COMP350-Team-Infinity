@@ -1,0 +1,237 @@
+<!-- Rules_EMV.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rules - EaseMyVote</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', path='styles.css') }}" rel="stylesheet">
+    <style>
+        /* Global Styling */
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh; /* Ensure body takes full height */
+            display: flex;
+            flex-direction: column; /* To push footer down */
+            background-image: url('https://i.postimg.cc/Bb8rR4nW/Krea-University.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            backdrop-filter: brightness(0.8); /* Reduce transparency of the background image */
+        }
+
+        /* Color Scheme */
+        :root {
+            --primary-color: #2252a1;
+            --secondary-color: #2856a4;
+            --text-color: #fff; /* Set text color to white */
+        }
+
+        /* Navbar Styling */
+        .navbar-custom {
+            background-color: white;
+            padding: 10px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-brand img {
+            width: 150px; /* Logo size */
+        }
+
+        /* Progress Bar Styling (Stepper) */
+        .stepper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            margin: 40px 0;
+            padding: 0 50px;
+        }
+
+        .step {
+            text-align: center;
+            flex: 1;
+            position: relative;
+        }
+
+        .step .step-title {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        /* Line Connecting Steps */
+        .stepper::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50px;
+            right: 50px;
+            height: 2px;
+            background-color: var(--primary-color);
+            z-index: 0;
+        }
+
+        .step.active .step-title {
+            background-color: var(--secondary-color);
+        }
+
+        .step.inactive .step-title {
+            background-color: #ccc; /* Greyed out for future steps */
+        }
+
+        /* Card Styling */
+        .container-form {
+            flex-grow: 1; /* Pushes footer to the bottom */
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 800px; /* Adjust width for better look */
+            border: none;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            border-radius: 12px;
+            background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent card background */
+            padding: 30px; /* Increased padding */
+            box-sizing: border-box; /* Ensures the padding and width stay within bounds */
+        }
+
+        .card h3 {
+            font-size: 1.8rem;
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px; /* Increased margin */
+        }
+
+        .list-group-item {
+            border: none;
+            padding: 15px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            padding: 12px 20px; /* Increased padding */
+            font-size: 1rem;
+            font-weight: bold; /* Bold text */
+            color: white; /* White text */
+            border-radius: 5px;
+            width: 100%; /* Full-width button */
+            margin-top: 10px; /* Added margin above button */
+            box-sizing: border-box; /* Ensures button stays within container */
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+
+        /* Footer */
+        .footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            margin-top: auto; /* Ensures footer stays at the bottom */
+            border-top: 3px solid var(--secondary-color);
+        }
+
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .logo-container img {
+            height: 40px; /* Decreased bottom logo size */
+            margin: 0 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+
+        <a class="navbar-brand" href="#">
+            <img src="https://i.postimg.cc/0QJ9Jx6w/Screenshot-2024-09-29-at-8-13-09-PM.png" alt="KREA University Logo">
+        </a>
+
+        <a class="navbar-brand" href="#">
+            <img src="https://i.postimg.cc/637pLnPT/Screenshot-2024-09-29-at-8-11-24-PM.png" alt="EaseMyVote Logo">
+        </a>
+    </nav>
+
+    <!-- Stepper -->
+    <div class="container">
+        <div class="stepper">
+            <div class="step active">
+                <div class="step-title">Login</div>
+            </div>
+            <div class="step active">
+                <div class="step-title">Rules</div>
+            </div>
+            <div class="step inactive">
+                <div class="step-title">Voting</div>
+            </div>
+            <div class="step inactive">
+                <div class="step-title">Summary</div>
+            </div>
+            <div class="step inactive">
+                <div class="step-title">Complete</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container container-form">
+        <div class="card p-4">
+            <h3 class="mb-3">Voting Rules for College Student Government Elections</h3>
+            <ol class="list-group list-group-numbered mb-3">
+                <li class="list-group-item">Eligibility: Only registered students of KREA University are eligible to vote. Each voter is permitted to cast only one ballot.</li>
+                <li class="list-group-item">Voting Period: The voting period begins at [Start Date and Time] and ends at [End Date and Time]. Votes cast outside this window will not be counted.</li>
+                <li class="list-group-item">How to Vote: Voting will take place online at [Website/Platform Name]. Voters must use their Email ID to access the unique voting link that allows them to cast their vote.</li>
+                <li class="list-group-item">Confidentiality: All votes are confidential and anonymous. No one, including election officials, can view individual votes.</li>
+                <li class="list-group-item">One Person, One Vote: Each student may only vote once per election. Any attempt to vote multiple times will result in disqualification.</li>
+                <li class="list-group-item">Prohibited Conduct: Bribery, coercion, or vote manipulation is strictly prohibited. Misuse of the voting platform (e.g., hacking) will lead to disqualification and disciplinary action.</li>
+                <li class="list-group-item">Voter Assistance: Students requiring assistance with the voting process may contact [Support Team] at [Contact Info]. Election officials are available during the voting period for support.</li>
+                <li class="list-group-item">Dispute Resolution: Any disputes or challenges regarding the election process or results must be submitted in writing to [Election Committee] within 24 hours of the voting period ending. The Election Committee's decision will be final.</li>
+                <li class="list-group-item">Results Announcement: Election results will be announced on [Date and Time] via [Email, Website, or Social Media]. In case of a tie, a runoff election will be held within [X days].</li>
+                <li class="list-group-item">Amendments: The Election Committee reserves the right to amend the rules at any time with proper notice to the student body.</li>
+            </ol>
+            <p style="text-align: center;">By hitting "Submit", you agree to these rules.</p>
+            
+            <form action="/rules" method="post">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="logo-container">
+            <img src="https://i.postimg.cc/0QJ9Jx6w/Screenshot-2024-09-29-at-8-13-09-PM.png" alt="KREA University Logo">
+            <img src="https://i.postimg.cc/637pLnPT/Screenshot-2024-09-29-at-8-11-24-PM.png" alt="EaseMyVote Logo">
+        </div>
+        <p>© 2024 EaseMyVote. All Rights Reserved.</p>
+    </footer>
+    
+</body>
+</html>

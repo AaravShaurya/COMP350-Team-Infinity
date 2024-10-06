@@ -1,0 +1,10 @@
+Dear {{ email }},
+
+Thank you for registering with EaseMyVote. Please verify your email by clicking on the link below:
+
+{{ verification_link }}
+
+This link will expire in 60 minutes.
+
+Best Regards,
+EaseMyVote Team

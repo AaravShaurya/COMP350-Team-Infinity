@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Summary - EaseMyVote</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Global Styling */
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('https://i.postimg.cc/Bb8rR4nW/Krea-University.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            backdrop-filter: brightness(0.8); /* Reduce transparency of the background image */
+        }
+
+        /* Color Scheme */
+        :root {
+            --primary-color: #2252a1;
+            --secondary-color: #2856a4;
+            --inactive-color: #cccccc; /* Inactive color for future steps */
+            --text-color: #fff; /* Set text color to white */
+        }
+
+        /* Navbar Styling */
+        .navbar-custom {
+            background-color: white;
+            padding: 10px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-brand img {
+            width: 150px; /* Logo size */
+        }
+
+        /* Progress Bar Styling (Stepper) */
+        .stepper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            margin: 40px 0;
+            padding: 0 50px;
+        }
+
+        .step {
+            text-align: center;
+            flex: 1;
+            position: relative;
+        }
+
+        .step .step-title {
+            display: inline-block;
+            background-color: var(--inactive-color); /* Default to inactive color */
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        /* Highlighted steps */
+        .step.completed .step-title {
+            background-color: var(--primary-color); /* Active color */
+        }
+
+        /* Future steps */
+        .step.future .step-title {
+            background-color: var(--inactive-color); /* Inactive/future step color */
+        }
+
+        .stepper::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50px;
+            right: 50px;
+            height: 2px;
+            background-color: var(--inactive-color); /* Line inactive color */
+            z-index: 0;
+        }
+
+        /* Active line segment */
+        .step.completed::before {
+            background-color: var(--primary-color);
+            z-index: -1;
+        }
+
+        .step.active .step-title {
+            background-color: var(--secondary-color);
+        }
+
+        /* Card Styling */
+        .container-form {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent card background */
+            border-radius: 10px;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 600px;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            border-radius: 12px;
+            background-color: white;
+            padding: 20px;
+        }
+
+        .card h3 {
+            font-size: 1.8rem;
+            color: #333;
+        }
+
+        .list-group-item {
+            border: none;
+            padding: 15px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            border-radius: 5px;
+            display: block;
+            width: 150px;
+            margin: 0 auto;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            border-radius: 5px;
+            display: block;
+            width: 150px;
+            margin: 10px auto 0;
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--primary-color);
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            margin-top: 40px;
+            border-top: 3px solid var(--secondary-color);
+        }
+        
+        body {
+            position: relative;
+            min-height: 100vh;
+            padding-bottom: 100px; /* Ensure space for footer */
+            box-sizing: border-box;
+        }
+        
+        /* Logo Styling for Footer */
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .logo-container img {
+            height: 40px; /* Decreased bottom logo size */
+            margin: 0 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+       
+        <a class="navbar-brand" href="#">
+            <img src="https://i.postimg.cc/0QJ9Jx6w/Screenshot-2024-09-29-at-8-13-09-PM.png" alt="KREA University Logo">
+        </a>
+        
+        <a class="navbar-brand" href="#">
+            <img src="https://i.postimg.cc/637pLnPT/Screenshot-2024-09-29-at-8-11-24-PM.png" alt="EaseMyVote Logo">
+        </a>
+    </nav>
+
+    <!-- Stepper -->
+    <div class="container">
+        <div class="stepper">
+            <div class="step completed">
+                <div class="step-title">Login</div>
+            </div>
+            <div class="step completed">
+                <div class="step-title">Rules</div>
+            </div>
+            <div class="step completed">
+                <div class="step-title">Voting</div>
+            </div>
+            <div class="step active">
+                <div class="step-title">Summary</div>
+            </div>
+            <div class="step future">
+                <div class="step-title">Complete</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container container-form">
+        <div class="card p-4">
+            <h3 class="mb-3">Summary</h3>
+            <p>Your vote has been saved. If you wish to make changes, go back.</p>
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <strong>First Preference:</strong> {{ preferences.first_pref }}
+                </li>
+                <li class="list-group-item">
+                    <strong>Second Preference:</strong> {{ preferences.second_pref }}
+                </li>
+            </ul>
+         
+            <a href="/thankyou" class="btn btn-primary mt-3">Submit</a>
+       
+            <a href="/voting" class="btn btn-secondary mt-3">Go Back</a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <div class="logo-container">
+            <img src="https://i.postimg.cc/0QJ9Jx6w/Screenshot-2024-09-29-at-8-13-09-PM.png" alt="KREA University Logo">
+            <img src="https://i.postimg.cc/637pLnPT/Screenshot-2024-09-29-at-8-11-24-PM.png" alt="EaseMyVote Logo">
+        </div>
+        <p>©️ 2024 EaseMyVote. All Rights Reserved.</p>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="{{ url_for('static', path='scripts.js') }}"></script>
+</body>
+</html>

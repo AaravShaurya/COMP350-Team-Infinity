@@ -1,0 +1,169 @@
+<!-- Login_EMV.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - EaseMyVote</title>
+
+    <link href="{{ url_for('static', path='styles.css') }}" rel="stylesheet">
+    <style>
+        /* Global Styling */
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('https://i.postimg.cc/Bb8rR4nW/Krea-University.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            backdrop-filter: brightness(0.8); /* Reduce transparency of the background image */
+        }
+
+        /* Color Scheme */
+        :root {
+            --primary-color: #2252a1;
+            --secondary-color: #2856a4;
+            --text-color: #fff; /* Set text color to white */
+        }
+
+        /* Navbar Styling */
+        .navbar-custom {
+            background-color: white;
+            padding: 10px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-brand img {
+            width: 150px; /* Logo size */
+        }
+
+        /* Centered Form */
+        .container-form {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh; /* Full screen height */
+            padding: 20px;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 600px; /* Increased the width */
+            border: none;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            border-radius: 12px;
+            background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent card background */
+            padding: 30px; /* Increased padding */
+            box-sizing: border-box; /* Ensures the padding and width stay within bounds */
+        }
+
+        .card h3 {
+            font-size: 1.8rem;
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px; /* Increased margin */
+        }
+
+        .form-control {
+            padding: 12px 20px; /* Increased padding for the input field */
+            font-size: 1rem; /* Increased font size for input */
+            border-radius: 5px;
+            border: 1px solid #ced4da;
+            width: 100%; /* Full width */
+            margin-bottom: 20px; /* Added margin at the bottom */
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1); /* Soft shadow to the input */
+            box-sizing: border-box; /* Ensures input fits within the container */
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color); /* Color change on focus */
+            box-shadow: 0 0 8px rgba(34, 82, 161, 0.2); /* Subtle glow effect */
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            padding: 12px 20px; /* Increased padding */
+            font-size: 1rem;
+            font-weight: bold; /* Bold text */
+            color: white; /* White text */
+            border-radius: 5px;
+            width: 100%; /* Full-width button */
+            margin-top: 10px; /* Added margin above button */
+            box-sizing: border-box; /* Ensures button stays within container */
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+
+        /* Hero Section for Login Page */
+        .login-hero {
+            color: var(--text-color);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-hero h1, .login-hero h2 {
+            margin: 0;
+        }
+
+        .login-hero h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+        }
+
+        .login-hero h2 {
+            font-size: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+        
+        <a class="navbar-brand" href="#">
+            <img src="https://i.postimg.cc/0QJ9Jx6w/Screenshot-2024-09-29-at-8-13-09-PM.png" alt="KREA University Logo">
+        </a>
+        
+        <a class="navbar-brand" href="#">
+            <img src="https://i.postimg.cc/637pLnPT/Screenshot-2024-09-29-at-8-11-24-PM.png" alt="EaseMyVote Logo">
+        </a>
+    </nav>
+
+    <!-- Login Form -->
+    <div class="container container-form">
+        <!-- Hero Section -->
+        <div class="login-hero">
+            <h1>KREA University</h1>
+            <h2>SIAS Student Government Elections 2024</h2>
+        </div>
+
+        <!-- Login Form -->
+        <div class="card p-4">
+            <h3 class="mb-3">Log In using your University Email</h3>
+            {% if error %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+            {% endif %}
+            <form action="/login" method="post">
+                <div class="mb-3">
+                    <label for="email" class="form-label">University Email</label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Enter your university email" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Send Verification Email</button>
+            </form>
+        </div>
+    </div>
+
+
+    <script src="{{ url_for('static', path='scripts.js') }}"></script>
+</body>
+</html>
