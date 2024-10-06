@@ -50,7 +50,10 @@ First, clone the repository to your local machine:
 git clone https://github.com/your-username/ease-my-vote.git
 ```
 
-Secondly, ensure that you have the following dependencies installed, if not please install them - pip install fastapi uvicorn sqlalchemy aiosmtplib cryptography itsdangerous jinja2
+Secondly, ensure that you have the following dependencies installed, if not please install them - 
+pip install aiosmtplib cryptography fastapi itsdangerous jinja2 pandas pytest python-dotenv pydantic sqlalchemy starlette uvicorn httpx jinja2
+
+These should get downloaded
 
 Now, download all the files from the demo folder following the exact same file structure as we followed when making that folder. Once that's done go to the import_voters.py file and change there is a line of code that has a file path given there, you need to be change this file path to point to the directory where you have stored the SIAS22-25.xlsx database so that it can read that data properly.
 
